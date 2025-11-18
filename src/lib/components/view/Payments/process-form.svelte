@@ -155,9 +155,12 @@
 	});
 </script>
 
-<Dialog.Content onclose={() => reset()}>
+<Dialog.Content
+	class="w-[1200px] max-h-[90vh] overflow-y-auto"
+	onclose={() => reset()}
+>
 	{#if dialogState?.selectedRow}
-		<form use:form class="grid gap-4">
+		<form use:form class="space-y-4">
 			<Dialog.Header>
 				<Dialog.Title>Payment for Subscription</Dialog.Title>
 				<Dialog.Description
@@ -166,47 +169,70 @@
 					></Dialog.Description
 				>
 			</Dialog.Header>
-			<div class="grid sm:grid-cols-2 gap-4">
+
+			<div class="grid grid-cols-2 gap-4">
 				<div class="grid gap-1">
 					<p class="text-sm text-muted-foreground font-semibold">
 						Subscriber Name
 					</p>
-					<p>{dialogState.selectedRow.subscriberName}</p>
+					<p class="p-2 border rounded-md bg-muted/50 text-sm">
+						{dialogState.selectedRow.subscriberName}
+					</p>
 				</div>
+
 				<div class="grid gap-1">
 					<p class="text-sm text-muted-foreground font-semibold">
 						Subscription Name
 					</p>
-					<p>{dialogState.selectedRow.subscriptionName}</p>
+					<p class="p-2 border rounded-md bg-muted/50 text-sm">
+						{dialogState.selectedRow.subscriptionName}
+					</p>
 				</div>
+
 				<div class="grid gap-1">
-					<p class="text-sm text-muted-foreground font-semibold">Description</p>
-					<p>{dialogState.selectedRow.purpose}</p>
+					<p class="text-sm text-muted-foreground font-semibold">Frequency</p>
+					<p class="p-2 border rounded-md bg-muted/50 text-sm">
+						{dialogState.selectedRow.frequency}
+					</p>
 				</div>
-				<div class="grid gap-2">
-					<Label for="price">Price</Label>
+
+				<div class="grid gap-1">
+					<p class="text-sm text-muted-foreground font-semibold">
+						Current Price
+					</p>
+					<p class="p-2 border rounded-md bg-muted/50 text-sm">
+						{currencyFormatter(parseFloat(dialogState.selectedRow.price))}
+					</p>
+				</div>
+
+				<div class="grid gap-2 col-span-2">
+					<Label for="price">New Price *</Label>
 					<Tooltip.Root disabled={!$errors.price}>
 						<Tooltip.Trigger>
 							<Input
 								name="price"
 								id="price"
 								type="text"
-								placeholder="Enter price"
+								placeholder="Enter new price"
 								value={$data.price}
+								class="w-full"
 							/>
 						</Tooltip.Trigger>
 						<Tooltip.Content>{$errors.price}</Tooltip.Content>
 					</Tooltip.Root>
 				</div>
-				<div class="grid gap-1">
-					<p class="text-sm text-muted-foreground font-semibold">Frequency</p>
-					<p>{dialogState.selectedRow.frequency}</p>
+
+				<div class="grid gap-1 col-span-2">
+					<p class="text-sm text-muted-foreground font-semibold">Description</p>
+					<p class="p-2 border rounded-md bg-muted/50 text-sm min-h-[60px]">
+						{dialogState.selectedRow.purpose}
+					</p>
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-2 gap-4">
+			<div class="grid grid-cols-2 gap-4">
 				<div class="grid gap-2">
-					<Label for="startDate">Start Date</Label>
+					<Label for="startDate">Start Date *</Label>
 					<Tooltip.Root disabled={!$errors.startDate}>
 						<Tooltip.Trigger>
 							<Input
@@ -214,13 +240,15 @@
 								id="startDate"
 								type="date"
 								onchange={handleStartDateChange}
+								class="w-full"
 							/>
 						</Tooltip.Trigger>
 						<Tooltip.Content>{$errors.startDate}</Tooltip.Content>
 					</Tooltip.Root>
 				</div>
+
 				<div class="grid gap-2">
-					<Label for="endDate">End Date</Label>
+					<Label for="endDate">End Date *</Label>
 					<Tooltip.Root disabled={!$errors.endDate}>
 						<Tooltip.Trigger>
 							<Input
@@ -228,6 +256,7 @@
 								id="endDate"
 								type="date"
 								onchange={() => setTouched("endDate", true)}
+								class="w-full"
 							/>
 						</Tooltip.Trigger>
 						<Tooltip.Content>{$errors.endDate}</Tooltip.Content>
@@ -236,12 +265,12 @@
 			</div>
 
 			<div class="grid gap-2">
-				<Label>Payment Method</Label>
+				<Label>Payment Method *</Label>
 				<Tooltip.Root disabled={!$errors.paymentMethod}>
 					<Tooltip.Trigger>
 						<RadioGroup.Root
 							name="paymentMethod"
-							class="grid gap-2"
+							class="grid grid-cols-1 gap-2"
 							value={$data.paymentMethod as string}
 							onValueChange={(val) => {
 								$data.paymentMethod = val as
@@ -302,30 +331,36 @@
 					<Tooltip.Content>{$errors.paymentMethod}</Tooltip.Content>
 				</Tooltip.Root>
 			</div>
-			<div class="grid gap-2">
-				<Label for="transactionId">Transaction ID</Label>
-				<Input
-					name="transactionId"
-					id="transactionId"
-					placeholder="Enter transaction ID, if available"
-				/>
-			</div>
-			<div class="grid gap-2">
-				<Label for="insuranceDocument">Upload Insurance Document</Label>
-				<Tooltip.Root disabled={!$errors.insuranceDocument}>
-					<Tooltip.Trigger>
-						<Input
-							name="insuranceDocument"
-							id="insuranceDocument"
-							placeholder="Upload insurance document"
-							type="file"
-						/>
-					</Tooltip.Trigger>
-					<Tooltip.Content>{$errors.insuranceDocument}</Tooltip.Content>
-				</Tooltip.Root>
+
+			<div class="grid grid-cols-1 gap-4">
+				<div class="grid gap-2">
+					<Label for="transactionId">Transaction ID</Label>
+					<Input
+						name="transactionId"
+						id="transactionId"
+						placeholder="Enter transaction ID, if available"
+						class="w-full"
+					/>
+				</div>
+
+				<div class="grid gap-2">
+					<Label for="insuranceDocument">Upload Insurance Document</Label>
+					<Tooltip.Root disabled={!$errors.insuranceDocument}>
+						<Tooltip.Trigger>
+							<Input
+								name="insuranceDocument"
+								id="insuranceDocument"
+								placeholder="Upload insurance document"
+								type="file"
+								class="w-full"
+							/>
+						</Tooltip.Trigger>
+						<Tooltip.Content>{$errors.insuranceDocument}</Tooltip.Content>
+					</Tooltip.Root>
+				</div>
 			</div>
 
-			<Dialog.Footer>
+			<Dialog.Footer class="pt-4">
 				<Button class="w-full" type="submit" disabled={$isSubmitting}>
 					{#if $isSubmitting}
 						<Spinner /> Submitting

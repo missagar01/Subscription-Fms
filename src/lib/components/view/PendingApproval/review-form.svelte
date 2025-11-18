@@ -87,8 +87,11 @@
 	});
 </script>
 
-<Dialog.Content class="overflow-y-auto" onclose={() => reset()}>
-	<form use:form class="grid gap-4">
+<Dialog.Content
+	class="w-[1200px] max-h-[90vh] overflow-y-auto"
+	onclose={() => reset()}
+>
+	<form use:form class="space-y-4">
 		<Dialog.Header>
 			<Dialog.Title>Review Subscription Request</Dialog.Title>
 			<Dialog.Description
@@ -97,86 +100,109 @@
 				></Dialog.Description
 			>
 		</Dialog.Header>
-		<div class="grid sm:grid-cols-2 gap-4">
+
+		<div class="grid grid-cols-2 gap-4">
 			<div class="grid gap-1">
 				<p class="text-sm text-muted-foreground font-semibold">Company Name</p>
-				<p>{dialogState.selectedRow.companyName}</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm">
+					{dialogState.selectedRow.companyName}
+				</p>
 			</div>
+
 			<div class="grid gap-1">
 				<p class="text-sm text-muted-foreground font-semibold">
 					Subscriber Name
 				</p>
-				<p>{dialogState.selectedRow.subscriberName}</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm">
+					{dialogState.selectedRow.subscriberName}
+				</p>
 			</div>
+
 			<div class="grid gap-1">
 				<p class="text-sm text-muted-foreground font-semibold">
 					Subscription Name
 				</p>
-				<p>{dialogState.selectedRow.subscriptionName}</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm">
+					{dialogState.selectedRow.subscriptionName}
+				</p>
 			</div>
+
 			<div class="grid gap-1">
 				<p class="text-sm text-muted-foreground font-semibold">Price</p>
-				<p>{currencyFormatter(parseFloat(dialogState.selectedRow.price))}</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm">
+					{currencyFormatter(parseFloat(dialogState.selectedRow.price))}
+				</p>
 			</div>
+
 			<div class="grid gap-1">
 				<p class="text-sm text-muted-foreground font-semibold">Frequency</p>
-				<p>{dialogState.selectedRow.frequency}</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm">
+					{dialogState.selectedRow.frequency}
+				</p>
 			</div>
+
 			<div class="grid gap-1">
-				<p class="text-sm text-muted-foreground font-semibold">Requstend On</p>
-				<p>{dateFormatter(dialogState.selectedRow.requestedOn)}</p>
+				<p class="text-sm text-muted-foreground font-semibold">Requested On</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm">
+					{dateFormatter(dialogState.selectedRow.requestedOn)}
+				</p>
+			</div>
+
+			<div class="grid gap-1 col-span-2">
+				<p class="text-sm text-muted-foreground font-semibold">
+					Purpose of Subscription
+				</p>
+				<p class="p-2 border rounded-md bg-muted/50 text-sm min-h-[60px]">
+					{dialogState.selectedRow.purpose}
+				</p>
 			</div>
 		</div>
 
-		<div class="grid gap-1">
-			<p class="text-sm text-muted-foreground font-semibold">
-				Purpose of Subscription
-			</p>
-			<p class="bg-muted border rounded-md p-3 text-wrap">
-				{dialogState.selectedRow.purpose}
-			</p>
+		<div class="grid grid-cols-2 gap-4 pt-4">
+			<div class="grid gap-2">
+				<Label>Review Subscription *</Label>
+				<Select.Root
+					name="approval"
+					type="single"
+					bind:value={$data.approval}
+					onValueChange={() => setTouched("approval", true)}
+				>
+					<Tooltip.Root disabled={!$errors.approval}>
+						<Tooltip.Trigger>
+							<Select.Trigger
+								aria-invalid={$errors.approval ? true : undefined}
+								class="w-full"
+								>{$data.approval
+									? $data.approval
+									: "Select review option"}</Select.Trigger
+							>
+						</Tooltip.Trigger>
+						<Tooltip.Content>{$errors.approval}</Tooltip.Content>
+					</Tooltip.Root>
+					<Select.Content>
+						<Select.Item value="Approved">Approve</Select.Item>
+						<Select.Item value="Rejected">Reject</Select.Item>
+					</Select.Content>
+				</Select.Root>
+			</div>
+
+			<div class="grid gap-2">
+				<Label for="note">Note (Optional)</Label>
+				<Tooltip.Root disabled={!$errors.note}>
+					<Tooltip.Trigger>
+						<Textarea
+							name="note"
+							id="note"
+							bind:value={$data.note}
+							placeholder="Enter a note"
+							class="h-full"
+						/>
+					</Tooltip.Trigger>
+				</Tooltip.Root>
+			</div>
 		</div>
 
-		<div class="grid gap-2">
-			<Label>Review Subscription</Label>
-			<Select.Root
-				name="approval"
-				type="single"
-				bind:value={$data.approval}
-				onValueChange={() => setTouched("approval", true)}
-			>
-				<Tooltip.Root disabled={!$errors.approval}>
-					<Tooltip.Trigger>
-						<Select.Trigger
-							aria-invalid={$errors.approval ? true : undefined}
-							class="w-full"
-							>{$data.approval
-								? $data.approval
-								: "Select review option"}</Select.Trigger
-						>
-					</Tooltip.Trigger>
-					<Tooltip.Content>{$errors.approval}</Tooltip.Content>
-				</Tooltip.Root>
-				<Select.Content>
-					<Select.Item value="Approved">Approve</Select.Item>
-					<Select.Item value="Rejected">Reject</Select.Item>
-				</Select.Content>
-			</Select.Root>
-		</div>
-		<div class="grid gap-2">
-			<Label for="note">Note (Optional)</Label>
-			<Tooltip.Root disabled={!$errors.note}>
-				<Tooltip.Trigger>
-					<Textarea
-						name="note"
-						id="note"
-						bind:value={$data.note}
-						placeholder="Enter a note"
-					/>
-				</Tooltip.Trigger>
-			</Tooltip.Root>
-		</div>
-		<Dialog.Footer>
+		<Dialog.Footer class="pt-4">
 			<Button class="w-full" type="submit" disabled={$isSubmitting}>
 				{#if $isSubmitting}
 					<Spinner /> Submitting

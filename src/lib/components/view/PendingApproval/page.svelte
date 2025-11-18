@@ -39,13 +39,17 @@
 				.map((sheet) => ({
 					subscriptionNo: sheet.subscriptionNo,
 					companyName: sheet.companyName,
-					subscriberName: sheetState.userSheet.find(u => u.username === sheet.subscriberName)?.name || "",
+					subscriberName:
+						sheetState.userSheet.find(
+							(u) => u.username === sheet.subscriberName,
+						)?.name || "",
 					subscriptionName: sheet.subscriptionName,
 					price: sheet.price,
 					frequency: sheet.frequency,
-					requestedOn: sheet.actual1 === "" 
-						? new Date(sheet.timestamp) 
-						: new Date(sheet.actual1),
+					requestedOn:
+						sheet.actual1 === ""
+							? new Date(sheet.timestamp)
+							: new Date(sheet.actual1),
 					purpose: sheet.purpose,
 				})) satisfies PendingApprovalData[];
 		} catch (error) {
@@ -55,33 +59,34 @@
 	});
 
 	// Add null checks to prevent errors
-let historyData = $derived(
-  sheetState.approvalSheet.map((s) => {
-    const subscription = sheetState.subscriptionSheet.find(
-      sh => s.subscriptionNo === sh.subscriptionNo
-    );
-    if (!subscription) return null;
+	let historyData = $derived(
+		sheetState.approvalSheet
+			.map((s) => {
+				const subscription = sheetState.subscriptionSheet.find(
+					(sh) => s.subscriptionNo === sh.subscriptionNo,
+				);
+				if (!subscription) return null;
 
-    const subscriber = sheetState.userSheet.find(
-      su => su.username === subscription.subscriberName
-    );
+				const subscriber = sheetState.userSheet.find(
+					(su) => su.username === subscription.subscriberName,
+				);
 
-    return {
-      approvalNo: s.approvalNo,
-      subscriptionNo: s.subscriptionNo,
-      subscriberName: subscriber?.name || subscription.subscriberName,
-      subscriptionName: subscription.subscriptionName,
-      approvalStatus: s.approvalStatus,
-      companyName: subscription.companyName,
-      frequency: subscription.frequency,
-      price: subscription.price,
-      purpose: subscription.purpose,
-      requestedOn: new Date(s.requestedOn),
-      reviewedOn: new Date(s.timestamp),
-    };
-  }).filter(Boolean) satisfies ApprovalHistoryData[],
-);
-
+				return {
+					approvalNo: s.approvalNo,
+					subscriptionNo: s.subscriptionNo,
+					subscriberName: subscriber?.name || subscription.subscriberName,
+					subscriptionName: subscription.subscriptionName,
+					approvalStatus: s.approvalStatus,
+					companyName: subscription.companyName,
+					frequency: subscription.frequency,
+					price: subscription.price,
+					purpose: subscription.purpose,
+					requestedOn: new Date(s.requestedOn),
+					reviewedOn: new Date(s.timestamp),
+				};
+			})
+			.filter(Boolean) satisfies ApprovalHistoryData[],
+	);
 </script>
 
 <Tabs.Root value="pending">
